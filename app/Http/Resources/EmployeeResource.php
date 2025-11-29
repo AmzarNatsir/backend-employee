@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\JabatanModel;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -27,6 +28,13 @@ class EmployeeResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $direct_supervisor = [];
+        $gakom = JabatanModel::find($this->id_jabatan);
+        $gakom_l1 = JabatanModel::find($gakom->id_gakom);
+        $direct_supervisor = [
+            'id' => $gakom_l1->id ?? null,
+            'jabatan' => $gakom_l1->nm_jabatan ?? null,
+        ];
         return [
             'id'        => $this->id,
             'nik'       => $this->nik,
@@ -34,7 +42,7 @@ class EmployeeResource extends JsonResource
             'departemen'=> $this->getJabatan->getDepartemen->nm_dept ?? null,
             'subdepartemen'=> $this->getJabatan->getSubdepartemen->nm_subdept ?? null,
             'Jabatan'  => $this->getJabatan->nm_jabatan ?? null,
-            'created_at'=> $this->created_at?->toDateTimeString(),
+            "direct_supervisor"     => $direct_supervisor,
         ];
     }
 }
